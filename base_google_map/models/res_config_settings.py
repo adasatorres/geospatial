@@ -96,13 +96,11 @@ class ResConfigSettings(models.TransientModel):
         values = [(country.code, country.name) for country in country_ids]
         return values
 
-    google_maps_view_api_key = fields.Char(string="Google Maps View Api Key")
+    google_maps_view_api_key = fields.Char()
     google_maps_lang_localization = fields.Selection(
         selection=GMAPS_LANG_LOCALIZATION, string="Google Maps Language Localization"
     )
-    google_maps_region_localization = fields.Selection(
-        selection=get_region_selection, string="Google Maps Region Localization"
-    )
+    google_maps_region_localization = fields.Selection(selection=get_region_selection)
     google_maps_theme = fields.Selection(
         selection=[
             ("default", "Default"),
@@ -130,7 +128,7 @@ class ResConfigSettings(models.TransientModel):
             self.google_maps_region_localization = ""
 
     def set_values(self):
-        super(ResConfigSettings, self).set_values()
+
         ICPSudo = self.env["ir.config_parameter"].sudo()
         lang_localization = self._set_google_maps_lang_localization()
         region_localization = self._set_google_maps_region_localization()
@@ -145,6 +143,7 @@ class ResConfigSettings(models.TransientModel):
         ICPSudo.set_param("google.region_localization", region_localization)
         ICPSudo.set_param("google.maps_theme", self.google_maps_theme)
         ICPSudo.set_param("google.maps_libraries", active_libraries)
+        return super(ResConfigSettings, self).set_values()
 
     @api.model
     def get_values(self):
